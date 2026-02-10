@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-uri = "mongodb+srv://Test:T5doQSlNIkrkoyzI@sensors.ctflhib.mongodb.net/?appName=Sensors"
-client = MongoClient(uri)
+client = MongoClient("mongodb+srv://projetiot:PigZNQGf6lPy97Pk@projetiot.mwwvunz.mongodb.net/")
+db = client["Testing"] 
+collection = db["Room-Agents"] 
 
-print(client.list_database_names())
