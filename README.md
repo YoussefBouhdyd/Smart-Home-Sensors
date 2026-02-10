@@ -28,6 +28,12 @@ repo/
 
 # How To Run
 Install all dependicies
+
 ```
 pip install -r requirements.txt
+```
+
+```
+sudo systemctl enable mosquitto
+sudo systemctl start mosquitto
 ```
