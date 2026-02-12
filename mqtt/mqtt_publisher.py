@@ -1,6 +1,6 @@
 from sensors.temperateur_sensor import TemperatureSensor
-from sensors.humidity_sensor import humidity
-from sensors.gaz_sensor import gaz
+from sensors.humidity_sensor import HumiditySensor
+from sensors.gaz_sensor import GasSensor
 from sensors.anomalous import anomalous
 from gateway.db_handler import collectionAgent
 import paho.mqtt.client as mqtt
@@ -12,13 +12,21 @@ client = mqtt.Client()
 client.connect("localhost", 1883)
 
 def read_sensor_data(room_name):
+    humidity = HumiditySensor()
     temperature = TemperatureSensor()
+    gaz = GasSensor()
     climat_staus = collectionAgent.find_one(
         {"id": room_name},
         {"clima": 1, "_id": 0}
     )
     if climat_staus['clima']:
         temperature.ac_on(True)
+    window_status = collectionAgent.find_one(
+        {"id": room_name},
+        {"window":1, "_id":0}
+    )
+    if window_status['window']:
+        gaz.trigger_leak(False)
     return {
         "id": room_name+"-sensor",
         "tempCapteur": temperature.read_value(),
