@@ -38,7 +38,6 @@ class TemperatureSensor(VirtualSensor):
         return self.update(outside)
 
 temperature = TemperatureSensor()
-temperature.ac_on()
-print(temperature.read_value())
+
 
 

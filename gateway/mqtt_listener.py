@@ -1,12 +1,12 @@
 import paho.mqtt.client as mqtt
 from datetime import datetime, timezone
 import json
-from db_handler import collection
+from db_handler import collectionData,collectionAgent
 
 def on_message(client, userdata, msg):
     try:
         data = json.loads(msg.payload.decode())
-        result = collection.insert_one({
+        result = collectionData.insert_one({
             **data,
             "timestamp": datetime.now(timezone.utc).isoformat()
         })

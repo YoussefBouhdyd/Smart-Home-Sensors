@@ -15,14 +15,12 @@ if not mongo_uri:
 
 client = MongoClient(mongo_uri)
 db = client["DataSensor"] 
-collection = db["Data"] 
-
-
+collectionData = db["Data"] 
 db = client["Testing"]
-collection = db["Room-Agents"]
+collectionAgent = db["Room-Agents"]
 
-# Read all documents from the collection
-documents = collection.find()
-for doc in documents:
-    print(f"room: {doc['id']} climat status : {doc['clima']} Window status: {doc['window']}")
+# # Read all documents from the collection
+# documents = collectionAgent.find()
+# for doc in documents:
+#     print(f"room: {doc['id']} climat status : {doc['clima']} Window status: {doc['window']}")
 

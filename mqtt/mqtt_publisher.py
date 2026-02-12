@@ -2,10 +2,10 @@ from sensors.temperateur_sensor import temperature
 from sensors.humidity_sensor import humidity
 from sensors.gaz_sensor import gaz
 from sensors.anomalous import anomalous
+from gateway.db_handler import collectionAgent
 import paho.mqtt.client as mqtt
 import json
 import time
-import random
 from datetime import datetime, timezone
 
 client = mqtt.Client()
@@ -36,6 +36,7 @@ rooms = [
 while True:  
     for room in rooms:
         room_data = create_room_data(room["id"], room["name"])
+        
         if not room_data.get("id") or room_data.get("tempCapteur") is None:
             print(f"Invalid data for {room['name']}: missing required fields")
             continue
