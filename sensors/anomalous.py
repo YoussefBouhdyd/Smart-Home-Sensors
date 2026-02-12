@@ -1,20 +1,8 @@
 import random
 
-def anomalous(normal, rate, *anomaly):
+def anomalous(normal, rate, anomaly):
     """
-    Returns normal value or anomaly values based on rate percentage.
-    
-    Args:
-        normal: The normal value
-        rate: Percentage (0-100) of times to return normal value
-        *anomaly: One or more anomaly values to return for the remaining rate%
-    
-    Returns:
-        normal value with 'rate'% probability, or a random anomaly value otherwise.
-        If no anomaly values provided, always returns normal value.
-    
-    Raises:
-        ValueError: If rate is not between 0 and 100
+    Returns normal value or anomaly value based on rate percentage.
     """
     
     if not 0 <= rate <= 100:
@@ -26,5 +14,5 @@ def anomalous(normal, rate, *anomaly):
     if random.random() * 100 < rate:
         return normal
     else:
-        return random.choice(*anomaly)
+        return anomaly
     

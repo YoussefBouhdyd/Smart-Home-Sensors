@@ -1,2 +1,2 @@
 from .virtual_sensor import virtual_sensor
-gaz = virtual_sensor(start=20, variation = 5,min=20 , max = 30)
+gaz = virtual_sensor(start=1000, variation = 900,min=1000 , max = 40000) #ppm
