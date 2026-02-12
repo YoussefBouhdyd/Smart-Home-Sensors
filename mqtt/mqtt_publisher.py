@@ -34,6 +34,21 @@ rooms = [
 ]
 while True:  
     for room in rooms:
-        room_data = create_room_data(room["id"], room["name"])
-        client.publish(f"home/{room['name']}", json.dumps(room_data))
-        time.sleep(1)
+        try:
+            room_data = create_room_data(room["id"], room["name"])
+            if not room_data.get("roomid") or room_data.get("temperature") is None:
+                print(f"Invalid data for {room['name']}: missing required fields")
+                continue
+            
+            result = client.publish(f"home/{room['name']}", json.dumps(room_data))
+            
+            if result.rc == mqtt.MQTT_ERR_SUCCESS:
+                print(f"✓ Data sent successfully to home/{room['name']}")
+                print(f"  Room: {room_data['roomid']} | Temp: {room_data['temperature']}°C | Humidity: {room_data['humidity']}%")
+            else:
+                print(f"✗ Failed to send data to home/{room['name']} (code: {result.rc})")
+            
+            time.sleep(1)
+        except Exception as e:
+            print(f"✗ Error publishing data for {room['name']}: {str(e)}")
+            time.sleep(1)
