@@ -28,7 +28,7 @@ def read_sensor_data(room_name):
     if window_status['window']:
         gaz.trigger_leak(False)
     return {
-        "id": room_name+"-sensor",
+        "id": room_name,
         "tempCapteur": temperature.read_value(),
         "humiditeCapteur": humidity.read_value(),
         "gazCapteur": gaz.read_value(),
@@ -71,4 +71,4 @@ while True:
         else:
             print(f"✗ Failed to send data to home/{room['name']} (code: {result.rc})")
         
-        time.sleep(1)
+        time.sleep(5)
