@@ -1,4 +1,4 @@
-from sensors.temperateur_sensor import temperature
+from sensors.temperateur_sensor import TemperatureSensor
 from sensors.humidity_sensor import humidity
 from sensors.gaz_sensor import gaz
 from sensors.anomalous import anomalous
@@ -12,6 +12,12 @@ client = mqtt.Client()
 client.connect("localhost", 1883)
 
 def read_sensor_data(room_name):
+    temperature = TemperatureSensor()
+    climat_staus = collectionAgent.find_one(
+        {"id": room_name},
+        {"clima": 1, "_id": 0}
+    )
+    print(climat_staus)
     return {
         "id": room_name+"-sensor",
         "tempCapteur": temperature.read_value(),
@@ -29,9 +35,10 @@ def create_room_data(sensor_id, room_name):
         }
     }
 rooms = [
-    {"id": "001", "name": "living_room"},
+    {"id": "001", "name": "livingroom"},
     {"id": "002", "name": "kitchen"},
-    {"id": "003", "name": "bathroom"}
+    {"id": "003", "name": "bedroom"},
+    {"id": "004", "name": "toilet"}
 ]
 while True:  
     for room in rooms:
@@ -50,7 +57,3 @@ while True:
             print(f"✗ Failed to send data to home/{room['name']} (code: {result.rc})")
         
         time.sleep(1)
-        # try:
-        # except Exception as e:
-        #     print(f"✗ Error publishing data for {room['name']}: {str(e)}")
-        #     time.sleep(1)

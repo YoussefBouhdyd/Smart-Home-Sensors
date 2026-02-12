@@ -37,7 +37,5 @@ class TemperatureSensor(VirtualSensor):
 
         return self.update(outside)
 
-temperature = TemperatureSensor()
-
 
 
