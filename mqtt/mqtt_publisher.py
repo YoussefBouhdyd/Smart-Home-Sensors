@@ -41,7 +41,13 @@ def create_room_data(sensor_id, room_name):
             "sensor_type": "motion",
             "value": anomalous(False,60,True),
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
+        },
+        "porte": {
+            "sensor_id": f"{sensor_id}-porte",
+            "sensor_type": "porte",
+            "value": anomalous(False, 60, True),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        },
     }
 rooms = [
     {"id": "001", "name": "livingroom"},
