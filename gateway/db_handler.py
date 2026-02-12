@@ -14,6 +14,6 @@ if not mongo_uri:
     raise RuntimeError("Missing MONGODB_URI environment variable.")
 
 client = MongoClient(mongo_uri)
-db = client["Database"] 
-collection = db["Motion"] 
+db = client["DataSensor"] 
+collection = db["Data"] 
 

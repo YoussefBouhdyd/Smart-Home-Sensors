@@ -13,10 +13,10 @@ client.connect("localhost", 1883)
 
 def read_sensor_data(room_name):
     return {
-        "roomid": room_name+"-sensor",
-        "temperature": anomalous(temperature.read_value(),60,random.randint(30,40)),
-        "humidity": humidity.read_value(),
-        "gaz": anomalous(gaz.read_value(),60,random.randint(2000,40000)),
+        "id": room_name+"-sensor",
+        "tempCapteur": anomalous(temperature.read_value(),60,random.randint(30,40)),
+        "humiditeCapteur": humidity.read_value(),
+        "gazCapteur": anomalous(gaz.read_value(),60,random.randint(2000,40000)),
     }
 def create_room_data(sensor_id, room_name):
     return {
@@ -48,7 +48,7 @@ while True:
         else:
             print(f"✗ Failed to send data to home/{room['name']} (code: {result.rc})")
         
-        time.sleep(1)
+        time.sleep(5)
         # try:
         # except Exception as e:
         #     print(f"✗ Error publishing data for {room['name']}: {str(e)}")
