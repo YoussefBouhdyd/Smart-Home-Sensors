@@ -17,7 +17,8 @@ def read_sensor_data(room_name):
         {"id": room_name},
         {"clima": 1, "_id": 0}
     )
-    print(climat_staus)
+    if climat_staus['clima']:
+        temperature.ac_on(True)
     return {
         "id": room_name+"-sensor",
         "tempCapteur": temperature.read_value(),
