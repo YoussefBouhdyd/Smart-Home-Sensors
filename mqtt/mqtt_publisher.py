@@ -1,7 +1,7 @@
 from sensors.temperateur_sensor import temperature
 from sensors.humidity_sensor import humidity
-from sensors.anomalous import anomalous
 from sensors.gaz_sensor import gaz
+from sensors.anomalous import anomalous
 import paho.mqtt.client as mqtt
 import json
 import time
@@ -14,9 +14,9 @@ client.connect("localhost", 1883)
 def read_sensor_data(room_name):
     return {
         "id": room_name+"-sensor",
-        "tempCapteur": anomalous(temperature.read_value(),60,random.randint(30,40)),
+        "tempCapteur": temperature.read_value(),
         "humiditeCapteur": humidity.read_value(),
-        "gazCapteur": anomalous(gaz.read_value(),60,random.randint(2000,40000)),
+        "gazCapteur": gaz.read_value(),
     }
 def create_room_data(sensor_id, room_name):
     return {
@@ -36,7 +36,7 @@ rooms = [
 while True:  
     for room in rooms:
         room_data = create_room_data(room["id"], room["name"])
-        if not room_data.get("roomid") or room_data.get("temperature") is None:
+        if not room_data.get("id") or room_data.get("tempCapteur") is None:
             print(f"Invalid data for {room['name']}: missing required fields")
             continue
         
@@ -44,11 +44,11 @@ while True:
         
         if result.rc == mqtt.MQTT_ERR_SUCCESS:
             print(f"✓ Data sent successfully to home/{room['name']}")
-            print(f"  Room: {room_data['roomid']} | Temp: {room_data['temperature']}°C | Humidity: {room_data['humidity']}%")
+            print(f"  Room: {room_data['id']} | Temp: {room_data['tempCapteur']}°C | Humidity: {room_data['humiditeCapteur']}%")
         else:
             print(f"✗ Failed to send data to home/{room['name']} (code: {result.rc})")
         
-        time.sleep(5)
+        time.sleep(1)
         # try:
         # except Exception as e:
         #     print(f"✗ Error publishing data for {room['name']}: {str(e)}")
