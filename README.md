@@ -29,6 +29,13 @@ source <virtual_environment_name>/bin/activate
 pip install -r requirements.txt
 ```
 
+### Create .env file
+And the and this line (uri of your MongoDb Cluster)
+```
+MONGODB_URI=mongodb+srv://<user>:<pass>@<host>/
+```
+
+
 ```
 sudo systemctl enable mosquitto
 sudo systemctl start mosquitto
