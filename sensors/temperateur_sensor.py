@@ -1,11 +1,6 @@
-# from .virtual_sensor import virtual_sensor
-# temperature = virtual_sensor(start=10, variation = 15 , min=10 , max=25)
-
-
 import math
 import time
 from .virtual_sensor import VirtualSensor
-
 
 class TemperatureSensor(VirtualSensor):
 
@@ -33,7 +28,7 @@ class TemperatureSensor(VirtualSensor):
         outside = self._outside_temperature()
 
         if self.ac_on:
-            outside -= 5  # effet refroidissement
+            outside -= 5  
 
         return self.update(outside)
 

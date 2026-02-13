@@ -71,4 +71,4 @@ while True:
         else:
             print(f"✗ Failed to send data to home/{room['name']} (code: {result.rc})")
         
-        time.sleep(5)
+        time.sleep(1)
