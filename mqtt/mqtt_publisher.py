@@ -17,15 +17,15 @@ def read_sensor_data(room_name, temperature, humidity, gaz):
         {"id": room_name},
         {"clima": 1, "_id": 0}
     )
-    if climat_staus and climat_staus.get('clima'):
-        temperature.ac_on(True)
+    if climat_staus:
+        temperature.toggle_ac(climat_staus.get("clima"))
     
     window_status = collectionAgent.find_one(
         {"id": room_name},
         {"window": 1, "_id": 0}
     )
-    if window_status and window_status.get('window'):
-        gaz.trigger_leak(False)
+    if window_status:
+        gaz.trigger_leak(not window_status.get('window'))
     
     return {
         "id": room_name,
@@ -96,3 +96,5 @@ try:
         time.sleep(1)
 except KeyboardInterrupt:
     print("Shutting down...")
+
+
