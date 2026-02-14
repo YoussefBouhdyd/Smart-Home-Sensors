@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 from datetime import datetime, timezone
 import json
-from db_handler import collectionData,collectionAgent
+from db_handler import collectionData
 
 def on_message(client, userdata, msg):
     try:
