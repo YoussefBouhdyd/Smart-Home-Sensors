@@ -6,11 +6,12 @@ from gateway.db_handler import collectionAgent
 import paho.mqtt.client as mqtt
 import json
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone,timedelta
 import threading
 
 client = mqtt.Client()
 client.connect("localhost", 1883)
+
 
 def read_sensor_data(room_name, temperature, humidity, gaz):
     climat_staus = collectionAgent.find_one(                         
@@ -34,7 +35,7 @@ def read_sensor_data(room_name, temperature, humidity, gaz):
         "gazCapteur": gaz.read_value(),
     }
 
-def create_room_data(sensor_id, room_name, temperature, humidity, gaz):
+def create_room_data(sensor_id, room_name, temperature, humidity, gaz,current_time):
     """Create room data with sensor readings"""
     return {
         **read_sensor_data(room_name, temperature, humidity, gaz),
@@ -42,13 +43,13 @@ def create_room_data(sensor_id, room_name, temperature, humidity, gaz):
             "sensor_id": sensor_id,
             "sensor_type": "motion",
             "value": anomalous(False, 60, True),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp":current_time.isoformat(),
         },
         "porte": {
             "sensor_id": f"{sensor_id}-porte",
             "sensor_type": "porte",
             "value": anomalous(False, 60, True),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp":current_time.isoformat(),
         },
     }
 
@@ -57,10 +58,10 @@ def publish_room_data(room):
     temperature = TemperatureSensor()
     humidity = HumiditySensor()
     gaz = GasSensor()
-    
+    current_time = datetime.now(timezone.utc)
     while True:
-        room_data = create_room_data(room["id"], room["name"], temperature, humidity, gaz)
-        
+        room_data = create_room_data(room["id"], room["name"], temperature, humidity, gaz,current_time)
+        current_time += timedelta(minutes=5)
         if not room_data.get("id") or room_data.get("tempCapteur") is None:
             print(f"Invalid data for {room['name']}: missing required fields")
             time.sleep(1)
