@@ -7,39 +7,41 @@ import paho.mqtt.client as mqtt
 import json
 import time
 from datetime import datetime, timezone
+import threading
 
 client = mqtt.Client()
 client.connect("localhost", 1883)
 
-def read_sensor_data(room_name):
-    humidity = HumiditySensor()
-    temperature = TemperatureSensor()
-    gaz = GasSensor()
-    climat_staus = collectionAgent.find_one(
+def read_sensor_data(room_name, temperature, humidity, gaz):
+    climat_staus = collectionAgent.find_one(                         
         {"id": room_name},
         {"clima": 1, "_id": 0}
     )
-    if climat_staus['clima']:
+    if climat_staus and climat_staus.get('clima'):
         temperature.ac_on(True)
+    
     window_status = collectionAgent.find_one(
         {"id": room_name},
-        {"window":1, "_id":0}
+        {"window": 1, "_id": 0}
     )
-    if window_status['window']:
+    if window_status and window_status.get('window'):
         gaz.trigger_leak(False)
+    
     return {
         "id": room_name,
         "tempCapteur": temperature.read_value(),
         "humiditeCapteur": humidity.read_value(),
         "gazCapteur": gaz.read_value(),
     }
-def create_room_data(sensor_id, room_name):
+
+def create_room_data(sensor_id, room_name, temperature, humidity, gaz):
+    """Create room data with sensor readings"""
     return {
-        **read_sensor_data(room_name),
+        **read_sensor_data(room_name, temperature, humidity, gaz),
         "motion": {
             "sensor_id": sensor_id,
             "sensor_type": "motion",
-            "value": anomalous(False,60,True),
+            "value": anomalous(False, 60, True),
             "timestamp": datetime.now(timezone.utc).isoformat(),
         },
         "porte": {
@@ -49,26 +51,48 @@ def create_room_data(sensor_id, room_name):
             "timestamp": datetime.now(timezone.utc).isoformat(),
         },
     }
+
+def publish_room_data(room):
+    """Thread function to publish data for a single room"""
+    temperature = TemperatureSensor()
+    humidity = HumiditySensor()
+    gaz = GasSensor()
+    
+    while True:
+        room_data = create_room_data(room["id"], room["name"], temperature, humidity, gaz)
+        
+        if not room_data.get("id") or room_data.get("tempCapteur") is None:
+            print(f"Invalid data for {room['name']}: missing required fields")
+            time.sleep(1)
+            continue
+        
+        result = client.publish(f"home/{room['name']}", json.dumps(room_data))
+        
+        if result.rc == mqtt.MQTT_ERR_SUCCESS:
+            print(f"✓ {room['name']}: Temp: {room_data['tempCapteur']}°C | Humidity: {room_data['humiditeCapteur']}%")
+        else:
+            print(f"✗ Failed to send data to home/{room['name']} (code: {result.rc})")
+        
+        time.sleep(1)
+
 rooms = [
     {"id": "001", "name": "livingroom"},
     {"id": "002", "name": "kitchen"},
     {"id": "003", "name": "bedroom"},
     {"id": "004", "name": "toilet"}
 ]
-while True:  
-    for room in rooms:
-        room_data = create_room_data(room["id"], room["name"])
-        
-        if not room_data.get("id") or room_data.get("tempCapteur") is None:
-            print(f"Invalid data for {room['name']}: missing required fields")
-            continue
-        
-        result = client.publish(f"home/{room['name']}", json.dumps(room_data))
-        
-        if result.rc == mqtt.MQTT_ERR_SUCCESS:
-            print(f"✓ Data sent successfully to home/{room['name']}")
-            print(f"  Room: {room_data['id']} | Temp: {room_data['tempCapteur']}°C | Humidity: {room_data['humiditeCapteur']}%")
-        else:
-            print(f"✗ Failed to send data to home/{room['name']} (code: {result.rc})")
-        
+
+
+threads = []
+for room in rooms:
+    thread = threading.Thread(target=publish_room_data, args=(room,), daemon=True)
+    thread.start()
+    threads.append(thread)
+    print(f"Started thread for {room['name']}")
+
+
+try:
+    while True:
         time.sleep(1)
+except KeyboardInterrupt:
+    print("Shutting down...")

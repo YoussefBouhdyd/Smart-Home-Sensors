@@ -21,7 +21,7 @@ class TemperatureSensor(VirtualSensor):
 
     def _outside_temperature(self):
         hours = (time.time() - self.start_time) / 3600
-        return 25 + 5 * math.sin(2 * math.pi * hours / 24)
+        return 30 + 5 * math.sin(2 * math.pi * hours / 24)
 
     def read_value(self):
 
